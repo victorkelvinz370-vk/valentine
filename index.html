@@ -3,184 +3,350 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>💌 For Favour</title>
+  <title>For Favour 💙</title>
 
   <style>
-    body {
-      background: linear-gradient(135deg, #ff9a9e, #fad0c4);
-      font-family: Arial, sans-serif;
-      margin: 0;
-      overflow: hidden;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
+    :root{
+      --bg1:#071a2c;
+      --bg2:#0b2e52;
+      --card:#0b2440cc;
+      --stroke:#2b5f91;
+      --text:#eaf2ff;
+      --muted:#b9c9e6;
+      --accent:#4da3ff;
+      --accent2:#1f7ae0;
+      --shadow: 0 18px 50px rgba(0,0,0,.45);
+      --radius: 22px;
     }
 
-    .card {
-      background: rgba(255,255,255,0.92);
-      padding: 30px;
-      border-radius: 20px;
-      width: min(360px, 90vw);
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-      position: relative;
-      z-index: 2;
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 700px at 20% 10%, rgba(77,163,255,.22), transparent 55%),
+        radial-gradient(900px 600px at 80% 30%, rgba(31,122,224,.18), transparent 55%),
+        linear-gradient(135deg, var(--bg1), var(--bg2));
+      overflow:hidden;
     }
 
-    h1 { color: #ff4d6d; margin-top: 0; }
-    p { font-size: 18px; }
+    /* subtle floating glow */
+    .glow{
+      position:fixed;
+      inset:-30%;
+      background: radial-gradient(circle at 30% 35%, rgba(77,163,255,.10), transparent 45%),
+                  radial-gradient(circle at 70% 60%, rgba(31,122,224,.10), transparent 50%);
+      filter: blur(30px);
+      animation: drift 10s ease-in-out infinite alternate;
+      pointer-events:none;
+    }
+    @keyframes drift{ from{ transform:translate(-1%, -1%);} to{ transform:translate(1.5%, 1%);} }
 
-    .btns {
-      position: relative;
-      height: 70px;
-      margin-top: 10px;
+    .wrap{
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:22px;
+      position:relative;
+      z-index:2;
     }
 
-    button {
-      padding: 12px 20px;
-      border: none;
-      border-radius: 25px;
-      font-size: 16px;
-      cursor: pointer;
-      position: absolute;
-      top: 10px;
-      transition: transform 0.1s ease;
-      user-select: none;
+    .card{
+      width:min(720px, 92vw);
+      background:var(--card);
+      border:1px solid rgba(43,95,145,.55);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      backdrop-filter: blur(10px);
+      padding:28px;
+      position:relative;
+      overflow:hidden;
     }
 
-    .yes { left: 30px; background: #ff4d6d; color: white; }
-    .no  { right: 30px; background: #d9d9d9; }
-
-    .music-bar {
-      margin-top: 14px;
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      align-items: center;
-      flex-wrap: wrap;
+    .topline{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:10px;
     }
 
-    .music-btn {
-      position: static;
-      background: #111;
-      color: #fff;
-      padding: 10px 14px;
-      border-radius: 999px;
-      font-size: 14px;
+    .badge{
+      font-size:12px;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color:var(--muted);
+      border:1px solid rgba(185,201,230,.25);
+      padding:8px 10px;
+      border-radius:999px;
+      background:rgba(7,26,44,.35);
     }
 
-    /* Falling hearts */
-    .heart {
-      position: fixed;
-      top: -20px;
-      font-size: 18px;
-      animation: fall linear forwards;
-      opacity: 0.9;
-      z-index: 1;
-      pointer-events: none;
-      filter: drop-shadow(0 2px 2px rgba(0,0,0,0.15));
+    .title{
+      margin:12px 0 8px;
+      font-size:34px;
+      line-height:1.15;
+      letter-spacing:-.02em;
     }
 
-    @keyframes fall {
-      0% { transform: translateY(-20px) translateX(0) rotate(0deg); }
-      100% { transform: translateY(110vh) translateX(var(--drift)) rotate(360deg); }
+    .subtitle{
+      margin:0 0 18px;
+      color:var(--muted);
+      font-size:16px;
+      line-height:1.55;
     }
 
-    /* Yes screen */
-    .yes-screen {
-      position: fixed;
-      inset: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: linear-gradient(135deg, #ff758c, #ff7eb3);
-      color: white;
-      padding: 25px;
-      text-align: center;
-      z-index: 5;
+    .divider{
+      height:1px;
+      background:linear-gradient(90deg, transparent, rgba(77,163,255,.35), transparent);
+      margin:18px 0;
     }
 
-    .yes-box {
-      background: rgba(255,255,255,0.15);
-      border: 1px solid rgba(255,255,255,0.3);
-      padding: 22px;
-      border-radius: 18px;
-      max-width: 520px;
-      backdrop-filter: blur(6px);
+    .btnrow{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top:18px;
     }
 
-    .yes-box h2 { margin: 0 0 10px; }
-    .yes-box p { margin: 0; line-height: 1.5; font-size: 17px; }
+    button{
+      border:none;
+      cursor:pointer;
+      padding:12px 16px;
+      border-radius:14px;
+      font-size:15px;
+      font-weight:600;
+      transition: transform .12s ease, filter .12s ease, background .12s ease;
+      user-select:none;
+    }
+    button:active{ transform:scale(.98); }
+
+    .primary{
+      background:linear-gradient(135deg, var(--accent), var(--accent2));
+      color:#061426;
+    }
+    .primary:hover{ filter:brightness(1.05); }
+
+    .ghost{
+      background:rgba(234,242,255,.08);
+      color:var(--text);
+      border:1px solid rgba(234,242,255,.14);
+    }
+    .ghost:hover{ filter:brightness(1.06); }
+
+    /* pages */
+    .page{
+      display:none;
+      animation: fade .35s ease;
+    }
+    .page.active{ display:block; }
+    @keyframes fade{ from{ opacity:0; transform:translateY(6px);} to{ opacity:1; transform:translateY(0);} }
+
+    /* Valentine question page */
+    .question{
+      font-size:22px;
+      margin:0 0 8px;
+      color:var(--text);
+    }
+
+    /* No button runner (subtle) */
+    .runnerZone{
+      position:relative;
+      height:64px;
+      margin-top:14px;
+    }
+    .runnerZone .yesBtn{ position:absolute; left:0; top:0; }
+    .runnerZone .noBtn{
+      position:absolute;
+      right:0;
+      top:0;
+    }
+
+    /* Yes page text */
+    .letter{
+      margin-top:8px;
+      color:var(--text);
+      font-size:17px;
+      line-height:1.65;
+      white-space:pre-line;
+    }
+
+    .smallNote{
+      margin-top:14px;
+      color:rgba(185,201,230,.85);
+      font-size:13px;
+    }
+
+    /* Date page */
+    .dateBox{
+      margin-top:14px;
+      padding:14px;
+      border-radius:16px;
+      border:1px solid rgba(77,163,255,.25);
+      background:rgba(7,26,44,.35);
+    }
+    .dateLine{
+      margin:0;
+      font-size:16px;
+      line-height:1.6;
+      color:var(--text);
+    }
+    .time{
+      display:inline-block;
+      margin-top:10px;
+      padding:10px 12px;
+      border-radius:14px;
+      background:rgba(77,163,255,.12);
+      border:1px solid rgba(77,163,255,.25);
+      color:var(--text);
+      font-weight:700;
+      letter-spacing:.02em;
+    }
+
+    /* final confirmation */
+    .confirm{
+      margin-top:10px;
+      font-size:18px;
+      line-height:1.6;
+      color:var(--text);
+    }
   </style>
 </head>
 
 <body>
-  <div class="card" id="card">
-    <h1>Favour 💖</h1>
-    <p>Will you be my Valentine?</p>
+  <div class="glow"></div>
 
-    <div class="btns">
-      <button class="yes" id="yesBtn">Yes 💕</button>
-      <button class="no" id="noBtn">No 😅</button>
-    </div>
+  <div class="wrap">
+    <div class="card">
+      <div class="topline">
+        <div class="badge">Private</div>
+        <div class="badge" id="statusBadge">Page 1/4</div>
+      </div>
 
-    <div class="music-bar">
-      <button class="music-btn" id="musicToggle">▶ Play music</button>
-      <small>(Music file: <b>music.mp3</b>)</small>
+      <!-- PAGE 1 -->
+      <section class="page active" id="p1">
+        <h1 class="title">Favour 💙</h1>
+        <p class="subtitle">
+          I made something small for you.
+          Just take a second and read it properly.
+        </p>
+
+        <div class="divider"></div>
+
+        <div class="btnrow">
+          <button class="primary" onclick="go(2)">Continue</button>
+        </div>
+
+        <p class="smallNote">— Kelvin</p>
+      </section>
+
+      <!-- PAGE 2 -->
+      <section class="page" id="p2">
+        <h2 class="title" style="font-size:28px; margin-bottom:6px;">One question…</h2>
+        <p class="question">Will you be my Valentine?</p>
+        <p class="subtitle" style="margin-top:6px;">(Be honest 😏)</p>
+
+        <div class="runnerZone" id="runnerZone">
+          <button class="primary yesBtn" id="yesBtn" onclick="go(3)">Yes 💙</button>
+          <button class="ghost noBtn" id="noBtn">No</button>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="btnrow">
+          <button class="ghost" onclick="go(1)">Back</button>
+        </div>
+      </section>
+
+      <!-- PAGE 3 -->
+      <section class="page" id="p3">
+        <h2 class="title" style="font-size:28px; margin-bottom:8px;">I’m glad you said yes.</h2>
+
+        <div class="letter">
+I didn’t ask you lightly.
+I admire how you move through life —
+how you think, how you’ve supported me,
+and how everything feels calmer just by you being in it.
+
+I thank God for bringing you into my life,
+and I genuinely bless the day I met you.
+
+This isn’t about a day on the calendar.
+It’s about choosing you — intentionally.
+
+Happy Valentine’s, Favour 💙
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="btnrow">
+          <button class="primary" onclick="go(4)">Next</button>
+          <button class="ghost" onclick="go(2)">Back</button>
+        </div>
+      </section>
+
+      <!-- PAGE 4 -->
+      <section class="page" id="p4">
+        <h2 class="title" style="font-size:28px; margin-bottom:6px;">So… one more thing 💙</h2>
+        <p class="subtitle" style="margin-top:6px;">
+          Are you available on <b>Friday, the 14th of February</b> so we can go out together?
+        </p>
+
+        <div class="dateBox">
+          <p class="dateLine">I want to take you out properly.</p>
+          <div class="time">5:00 PM</div>
+        </div>
+
+        <div class="btnrow" style="margin-top:18px;">
+          <button class="primary" onclick="finalYes()">Of course 💙</button>
+          <button class="ghost" onclick="finalMaybe()">Let me confirm</button>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="btnrow">
+          <button class="ghost" onclick="go(3)">Back</button>
+        </div>
+
+        <div id="finalMsg" class="confirm" style="display:none;"></div>
+      </section>
     </div>
   </div>
 
-  <!-- Background music (you choose it by uploading music.mp3) -->
-  <audio id="bgMusic" loop>
-    <source src="music.mp3" type="audio/mpeg">
-  </audio>
-
   <script>
     /***********************
-     * 0) Simple Password Gate
-     * NOTE: This is "front-end" protection (not bank-level secure),
-     * but it stops random people opening it.
+     * Password Gate (simple)
+     * Change the password below.
      ***********************/
-    const PASS = "favour"; // CHANGE THIS to your secret password
+    const PASS = "favour"; // <- change this
     const entered = prompt("Password?");
     if (entered !== PASS) {
       document.body.innerHTML =
-        "<div style='font-family:Arial; text-align:center; padding:40px;'>" +
-        "<h2>Access denied 🔒</h2><p>Wrong password.</p></div>";
+        "<div style='font-family:Arial; text-align:center; padding:40px; color:#0b1c2d; background:#eaf2ff; min-height:100vh; display:flex; align-items:center; justify-content:center;'>" +
+        "<div><h2 style='margin:0 0 10px;'>Access denied 🔒</h2><p style='margin:0;'>Wrong password.</p></div></div>";
       throw new Error("Wrong password");
     }
 
-    /***********************
-     * 1) Falling Hearts Animation
-     ***********************/
-    const heartEmojis = ["💖","💘","💗","💞","💓","❤️"];
-    function spawnHeart() {
-      const h = document.createElement("div");
-      h.className = "heart";
-      h.textContent = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
-      h.style.left = Math.random() * 100 + "vw";
-      const duration = 4 + Math.random() * 4; // 4-8s
-      h.style.animationDuration = duration + "s";
-      h.style.setProperty("--drift", (Math.random() * 120 - 60) + "px");
-      h.style.fontSize = (16 + Math.random() * 16) + "px";
-      document.body.appendChild(h);
-      setTimeout(() => h.remove(), duration * 1000);
+    function go(n){
+      document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+      document.getElementById("p"+n).classList.add("active");
+      document.getElementById("statusBadge").textContent = `Page ${n}/4`;
     }
-    setInterval(spawnHeart, 250);
 
-    /***********************
-     * 2) Runaway NO button (desktop + mobile)
-     ***********************/
+    // Subtle "run away" NO button
     const noBtn = document.getElementById("noBtn");
-    const yesBtn = document.getElementById("yesBtn");
+    const zone = document.getElementById("runnerZone");
 
-    function moveNoButton() {
-      const padding = 20;
-      const btnRect = noBtn.getBoundingClientRect();
+    function moveNo(){
+      const z = zone.getBoundingClientRect();
+      const b = noBtn.getBoundingClientRect();
 
-      const maxX = window.innerWidth - btnRect.width - padding;
-      const maxY = window.innerHeight - btnRect.height - padding;
+      const pad = 6;
+      const maxX = Math.max(pad, (z.width - b.width - pad));
+      const maxY = Math.max(pad, (z.height - b.height - pad));
 
       const x = Math.random() * maxX;
       const y = Math.random() * maxY;
@@ -188,59 +354,24 @@
       noBtn.style.left = x + "px";
       noBtn.style.top = y + "px";
       noBtn.style.right = "auto";
-      noBtn.style.transform = "scale(1.05)";
-      setTimeout(() => noBtn.style.transform = "scale(1)", 120);
+      noBtn.style.position = "absolute";
     }
 
-    // Desktop
-    noBtn.addEventListener("mouseenter", moveNoButton);
-    // Mobile
-    noBtn.addEventListener("touchstart", (e) => { e.preventDefault(); moveNoButton(); });
+    // desktop + mobile
+    noBtn.addEventListener("mouseenter", moveNo);
+    noBtn.addEventListener("touchstart", (e)=>{ e.preventDefault(); moveNo(); });
 
-    /***********************
-     * 3) Deeper YES message
-     ***********************/
-    yesBtn.addEventListener("click", () => {
-      const screen = document.createElement("div");
-      screen.className = "yes-screen";
-      screen.innerHTML = `
-        <div class="yes-box">
-          <h2>OMG… you said YES 🥰💘</h2>
-          <p>
-            Favour, I’m genuinely grateful for you.<br><br>
-            You make life feel lighter, calmer, and more meaningful.
-            I don’t just want a Valentine… I want more moments with you —
-            more laughs, more memories, more us.<br><br>
-            Happy Valentine’s, my love ❤️
-          </p>
-        </div>
-      `;
-      document.body.appendChild(screen);
-    });
+    function finalYes(){
+      const el = document.getElementById("finalMsg");
+      el.style.display = "block";
+      el.innerHTML = "Say less 😌💙 I’ll sort everything. Just be ready at 5:00 PM.";
+    }
 
-    /***********************
-     * 4) Background Music (User must press play)
-     * Autoplay is usually blocked, so we give a play button.
-     ***********************/
-    const music = document.getElementById("bgMusic");
-    const toggle = document.getElementById("musicToggle");
-    let playing = false;
-
-    toggle.addEventListener("click", async () => {
-      try {
-        if (!playing) {
-          await music.play();
-          playing = true;
-          toggle.textContent = "⏸ Pause music";
-        } else {
-          music.pause();
-          playing = false;
-          toggle.textContent = "▶ Play music";
-        }
-      } catch (e) {
-        alert("Tap again to allow audio, or make sure music.mp3 is uploaded.");
-      }
-    });
+    function finalMaybe(){
+      const el = document.getElementById("finalMsg");
+      el.style.display = "block";
+      el.innerHTML = "No worries 💙 Just let me know what time works best for you.";
+    }
   </script>
 </body>
 </html>
