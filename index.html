@@ -2,54 +2,245 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>💌 For Favour</title>
+
   <style>
     body {
       background: linear-gradient(135deg, #ff9a9e, #fad0c4);
       font-family: Arial, sans-serif;
+      margin: 0;
+      overflow: hidden;
+      height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
       text-align: center;
-      margin: 0;
     }
+
     .card {
-      background: white;
+      background: rgba(255,255,255,0.92);
       padding: 30px;
       border-radius: 20px;
-      max-width: 320px;
+      width: min(360px, 90vw);
       box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      position: relative;
+      z-index: 2;
     }
-    h1 { color: #ff4d6d; }
+
+    h1 { color: #ff4d6d; margin-top: 0; }
+    p { font-size: 18px; }
+
+    .btns {
+      position: relative;
+      height: 70px;
+      margin-top: 10px;
+    }
+
     button {
       padding: 12px 20px;
-      margin: 10px;
       border: none;
       border-radius: 25px;
       font-size: 16px;
       cursor: pointer;
+      position: absolute;
+      top: 10px;
+      transition: transform 0.1s ease;
+      user-select: none;
     }
-    .yes { background: #ff4d6d; color: white; }
-    .no { background: #ccc; }
+
+    .yes { left: 30px; background: #ff4d6d; color: white; }
+    .no  { right: 30px; background: #d9d9d9; }
+
+    .music-bar {
+      margin-top: 14px;
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .music-btn {
+      position: static;
+      background: #111;
+      color: #fff;
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-size: 14px;
+    }
+
+    /* Falling hearts */
+    .heart {
+      position: fixed;
+      top: -20px;
+      font-size: 18px;
+      animation: fall linear forwards;
+      opacity: 0.9;
+      z-index: 1;
+      pointer-events: none;
+      filter: drop-shadow(0 2px 2px rgba(0,0,0,0.15));
+    }
+
+    @keyframes fall {
+      0% { transform: translateY(-20px) translateX(0) rotate(0deg); }
+      100% { transform: translateY(110vh) translateX(var(--drift)) rotate(360deg); }
+    }
+
+    /* Yes screen */
+    .yes-screen {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #ff758c, #ff7eb3);
+      color: white;
+      padding: 25px;
+      text-align: center;
+      z-index: 5;
+    }
+
+    .yes-box {
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.3);
+      padding: 22px;
+      border-radius: 18px;
+      max-width: 520px;
+      backdrop-filter: blur(6px);
+    }
+
+    .yes-box h2 { margin: 0 0 10px; }
+    .yes-box p { margin: 0; line-height: 1.5; font-size: 17px; }
   </style>
 </head>
+
 <body>
-  <div class="card">
+  <div class="card" id="card">
     <h1>Favour 💖</h1>
     <p>Will you be my Valentine?</p>
-    <button class="yes" onclick="yes()">Yes 💕</button>
-    <button class="no" onclick="no()">No 😅</button>
+
+    <div class="btns">
+      <button class="yes" id="yesBtn">Yes 💕</button>
+      <button class="no" id="noBtn">No 😅</button>
+    </div>
+
+    <div class="music-bar">
+      <button class="music-btn" id="musicToggle">▶ Play music</button>
+      <small>(Music file: <b>music.mp3</b>)</small>
+    </div>
   </div>
 
+  <!-- Background music (you choose it by uploading music.mp3) -->
+  <audio id="bgMusic" loop>
+    <source src="music.mp3" type="audio/mpeg">
+  </audio>
+
   <script>
-    function yes() {
+    /***********************
+     * 0) Simple Password Gate
+     * NOTE: This is "front-end" protection (not bank-level secure),
+     * but it stops random people opening it.
+     ***********************/
+    const PASS = "favour"; // CHANGE THIS to your secret password
+    const entered = prompt("Password?");
+    if (entered !== PASS) {
       document.body.innerHTML =
-        "<h1>Yayyy 🥰💘<br>You just made my day, Favour ❤️</h1>";
+        "<div style='font-family:Arial; text-align:center; padding:40px;'>" +
+        "<h2>Access denied 🔒</h2><p>Wrong password.</p></div>";
+      throw new Error("Wrong password");
     }
-    function no() {
-      alert("Are you sure? 😏");
+
+    /***********************
+     * 1) Falling Hearts Animation
+     ***********************/
+    const heartEmojis = ["💖","💘","💗","💞","💓","❤️"];
+    function spawnHeart() {
+      const h = document.createElement("div");
+      h.className = "heart";
+      h.textContent = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
+      h.style.left = Math.random() * 100 + "vw";
+      const duration = 4 + Math.random() * 4; // 4-8s
+      h.style.animationDuration = duration + "s";
+      h.style.setProperty("--drift", (Math.random() * 120 - 60) + "px");
+      h.style.fontSize = (16 + Math.random() * 16) + "px";
+      document.body.appendChild(h);
+      setTimeout(() => h.remove(), duration * 1000);
     }
+    setInterval(spawnHeart, 250);
+
+    /***********************
+     * 2) Runaway NO button (desktop + mobile)
+     ***********************/
+    const noBtn = document.getElementById("noBtn");
+    const yesBtn = document.getElementById("yesBtn");
+
+    function moveNoButton() {
+      const padding = 20;
+      const btnRect = noBtn.getBoundingClientRect();
+
+      const maxX = window.innerWidth - btnRect.width - padding;
+      const maxY = window.innerHeight - btnRect.height - padding;
+
+      const x = Math.random() * maxX;
+      const y = Math.random() * maxY;
+
+      noBtn.style.left = x + "px";
+      noBtn.style.top = y + "px";
+      noBtn.style.right = "auto";
+      noBtn.style.transform = "scale(1.05)";
+      setTimeout(() => noBtn.style.transform = "scale(1)", 120);
+    }
+
+    // Desktop
+    noBtn.addEventListener("mouseenter", moveNoButton);
+    // Mobile
+    noBtn.addEventListener("touchstart", (e) => { e.preventDefault(); moveNoButton(); });
+
+    /***********************
+     * 3) Deeper YES message
+     ***********************/
+    yesBtn.addEventListener("click", () => {
+      const screen = document.createElement("div");
+      screen.className = "yes-screen";
+      screen.innerHTML = `
+        <div class="yes-box">
+          <h2>OMG… you said YES 🥰💘</h2>
+          <p>
+            Favour, I’m genuinely grateful for you.<br><br>
+            You make life feel lighter, calmer, and more meaningful.
+            I don’t just want a Valentine… I want more moments with you —
+            more laughs, more memories, more us.<br><br>
+            Happy Valentine’s, my love ❤️
+          </p>
+        </div>
+      `;
+      document.body.appendChild(screen);
+    });
+
+    /***********************
+     * 4) Background Music (User must press play)
+     * Autoplay is usually blocked, so we give a play button.
+     ***********************/
+    const music = document.getElementById("bgMusic");
+    const toggle = document.getElementById("musicToggle");
+    let playing = false;
+
+    toggle.addEventListener("click", async () => {
+      try {
+        if (!playing) {
+          await music.play();
+          playing = true;
+          toggle.textContent = "⏸ Pause music";
+        } else {
+          music.pause();
+          playing = false;
+          toggle.textContent = "▶ Play music";
+        }
+      } catch (e) {
+        alert("Tap again to allow audio, or make sure music.mp3 is uploaded.");
+      }
+    });
   </script>
 </body>
 </html>
